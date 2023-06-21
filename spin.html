@@ -1,0 +1,176 @@
+<html>
+    <head>
+        <title> Spin and Win</title>
+        <style>
+            *
+            {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            body
+            {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background: #aeb174;
+            }
+            .container
+            {
+                position: relative;
+                width: 400px;
+                height: 400px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .container .spinbtn
+            {
+                position: absolute;
+                width: 70px;
+                height: 70px;
+                background: #fff;
+                border-radius: 50%;
+                z-index: 10;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-transform: uppercase;
+                font-weight: 600;
+                color: #333;
+                letter-spacing: 0.1cm;
+                border: 4px solid rgba(0, 0, 0, 0.75);
+                cursor: pointer;
+                user-select: none;
+            }
+            .container .spinbtn::before
+            {
+                content: ' ';
+                position: absolute;
+                top: 10px;
+                right: -20px;
+                width: 30px;
+                height: 35px;
+                background: #333;
+                clip-path: polygon(100% 25%, 25% 15%, 40% 60%);
+            }
+            .container .wheel
+            {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #333;
+                border-radius: 50%;
+                overflow: hidden;
+                box-shadow: 0 0 0 5px #333,
+                0 0 0 15px  #fff,
+                0 0 0 18px  #111;
+                transition: transform   3s ease-in-out;
+            }
+            .container .wheel .number
+            {
+                position: absolute;
+                width: 50%;
+                height: 50%;
+                background: var(--clr);
+                transform-origin: bottom right;
+                transform: rotate(calc(60deg * var(--i)));
+                clip-path: polygon(0 0, 74% 0, 100% 100%, 0 69%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                user-select: none;
+                cursor: pointer;
+            }
+            .container .wheel .number span
+            {
+                position: relative;
+                transform: rotate(315deg);
+                font-size: 0.75cm;
+                font-weight: 10%;
+                color: #fff;
+                text-shadow: 3px 5px 2px    rgba(0,0,0,0.36);
+            }
+            .container .wheel .number span::after
+            {
+                content: '$';
+                position: absolute;
+                font-size: 17px;
+                font-weight: 500;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div class="container" >
+            <div class="spinbtn">Spin</div>
+            <div class="wheel">
+                <div class="number" id="1" style="--i:1; --clr:#db7093;"><span>100</span></div>
+                <div class="number" id="2" style="--i:2; --clr:#20b2aa;"><span>1</span></div>
+                <div class="number" id="3" style="--i:3; --clr:#d63e92;"><span>50</span></div>
+                <div class="number" id="4" style="--i:4; --clr:#daa520;"><span>0</span></div>
+                <div class="number" id="5" style="--i:5; --clr:#ff340f;"><span>1000</span></div>
+                <div class="number" id="6" style="--i:6; --clr:#ff7f50;"><span>10</span></div>            
+            </div>
+        </div>
+        <script>
+            let wheel = document.querySelector('.wheel');
+            let spinbtn = document.querySelector('.spinbtn');
+            let value = Math.ceil(Math.random() * 3600);
+            let spinning = false;
+        
+            const wheelSegments = [
+                { prize: '100', angle: 60, color: '#db7093' },
+                { prize: '10', angle: 120, color: '#20b2aa' },
+                { prize: '1000', angle: 180, color: '#d63e92' },
+                { prize: '0', angle: 240, color: '#daa520' },
+                { prize: '50', angle: 300, color: '#ff340f' },
+                { prize: '1', angle: 00, color: '#ff7f50' },
+            ];
+        
+            const resultDiv = document.createElement('div');
+            resultDiv.style.fontSize = '24px';
+            resultDiv.style.fontWeight = 'bold';
+            resultDiv.style.marginTop = '20px';
+            resultDiv.style.textAlign = 'center';
+        
+            const container = document.querySelector('.container');
+            container.appendChild(resultDiv);
+        
+            spinbtn.onclick = function() {
+                if (spinning) return;
+        
+                spinning = true;
+                        
+                const numRotations = Math.floor(Math.random() * 6) + 5;
+        
+                const finalAngle = value + numRotations * 360;
+        
+                wheel.style.transform = `rotate(${finalAngle}deg)`;
+        
+                setTimeout(() => {
+                    spinning = false;
+        
+                    const normalizedAngle = finalAngle % 360;
+        
+                    const winner = wheelSegments.find(segment => {
+                        const startAngle = segment.angle - 30;
+                        const endAngle = segment.angle + 30;
+                        return normalizedAngle >= startAngle && normalizedAngle < endAngle;
+                    });
+        
+                    const { prize, color } = winner;
+        
+                    resultDiv.textContent = `Congratulations! You won ${prize}$`;
+                    resultDiv.style.color = color;
+                    alert(resultDiv.textContent)
+                    
+                }, 4000);
+            };
+        </script>
+    </body>
+</html>    
